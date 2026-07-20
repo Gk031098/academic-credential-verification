@@ -31,3 +31,37 @@ This project addresses these challenges by implementing blockchain technology to
 - Store supporting documents securely using IPFS.
 - Enable credential revocation by authorized administrators.
 - Improve transparency, security, and trust in academic credential verification.
+
+---
+
+## ✨ Features
+
+The Academic Credential Verification Portal provides the following core functionalities:
+
+- 🔐 **MetaMask Wallet Authentication**
+  - Secure login using MetaMask wallet.
+  - Displays the connected Ethereum account.
+
+- 🎓 **Issue Academic Credentials**
+  - Issue academic credentials to students.
+  - Upload supporting PDF certificates to IPFS.
+  - Store the IPFS Content Identifier (CID) securely on the Ethereum blockchain.
+
+- ✅ **Verify Credentials**
+  - Verify the authenticity of issued credentials.
+  - Retrieve credential details directly from the blockchain.
+  - Access supporting documents stored on IPFS.
+
+- 🚫 **Revoke Credentials**
+  - Revoke previously issued credentials.
+  - Prevent revoked credentials from being considered valid during verification.
+
+- 📋 **Credential Management**
+  - View all issued credentials.
+  - Monitor credential status.
+  - Display credential details in a user-friendly interface.
+
+- 📊 **Dashboard**
+  - View total credentials issued.
+  - View active and revoked credentials.
+  - Display the connected wallet address.
