@@ -65,3 +65,51 @@ The Academic Credential Verification Portal provides the following core function
   - View total credentials issued.
   - View active and revoked credentials.
   - Display the connected wallet address.
+
+  ---
+
+## 🛠️ Technology Stack
+
+| Category | Technology |
+|----------|------------|
+| Frontend | React.js |
+| Programming Language | JavaScript (ES6) |
+| Smart Contract | Solidity |
+| Blockchain Network | Ethereum (Local Development using Ganache) |
+| Development Framework | Truffle Suite |
+| Wallet Integration | MetaMask |
+| Decentralized Storage | IPFS (InterPlanetary File System) |
+| Blockchain Library | ethers.js v6 |
+| Styling | CSS3 |
+| Version Control | Git & GitHub |
+
+---
+
+## 📂 Project Structure
+
+```text
+academic-credential-verification/
+│
+├── client/                     # React frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── services/
+│   │   ├── App.js
+│   │   ├── contract.js
+│   │   └── index.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── contracts/                  # Solidity smart contracts
+│   ├── AcademicCredential.sol
+│   └── Migrations.sol
+│
+├── migrations/                 # Truffle migration scripts
+│
+├── test/                       # Smart contract tests
+│
+├── truffle-config.js           # Truffle configuration
+│
+└── README.md
+```
