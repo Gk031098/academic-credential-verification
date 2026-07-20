@@ -113,3 +113,152 @@ academic-credential-verification/
 │
 └── README.md
 ```
+
+---
+
+## 🏗️ System Architecture
+
+The Academic Credential Verification Portal follows a decentralized architecture that integrates a React frontend, Ethereum blockchain, MetaMask wallet, Solidity smart contracts, and the InterPlanetary File System (IPFS).
+
+The React application provides the user interface for administrators to issue, verify, and revoke academic credentials. MetaMask acts as the authentication layer and enables secure interaction with the Ethereum blockchain. Smart contracts manage credential records, while supporting PDF certificates are stored securely on IPFS. The blockchain stores only the credential information and the corresponding IPFS Content Identifier (CID), ensuring data integrity while minimizing on-chain storage.
+
+```text
+                    +-----------------------------+
+                    |          React.js           |
+                    |       User Interface        |
+                    +-------------+---------------+
+                                  |
+                                  | ethers.js
+                                  |
+                    +-------------v---------------+
+                    |         MetaMask            |
+                    |      Ethereum Wallet        |
+                    +-------------+---------------+
+                                  |
+                                  |
+                    +-------------v---------------+
+                    |   Solidity Smart Contract   |
+                    |  AcademicCredential.sol     |
+                    +-------------+---------------+
+                                  |
+                 +----------------+----------------+
+                 |                                 |
+                 |                                 |
+        +--------v--------+              +---------v---------+
+        | Ethereum Chain  |              |       IPFS        |
+        | Credential Data |              | PDF Certificates  |
+        +-----------------+              +-------------------+
+```
+
+---
+
+## ⚙️ System Workflow
+
+1. The administrator connects their Ethereum wallet using MetaMask.
+2. A student's academic credential information is entered into the system.
+3. The supporting PDF certificate is uploaded to IPFS.
+4. IPFS returns a unique Content Identifier (CID).
+5. The smart contract stores:
+   - Student information
+   - Credential details
+   - IPFS CID
+   - Credential status
+6. During verification, the smart contract retrieves the credential information from the blockchain.
+7. The corresponding PDF certificate is accessed securely through IPFS using the stored CID.
+8. If a credential has been revoked, the verification result clearly indicates its revoked status.
+
+---
+
+## 📸 Application Screenshots
+
+### Dashboard
+
+*Coming Soon*
+
+### Issue Credential
+
+*Coming Soon*
+
+### Verify Credential
+
+*Coming Soon*
+
+### Revoke Credential
+
+*Coming Soon*
+
+### Credential List
+
+*Coming Soon*
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+Ensure the following software is installed:
+
+- Node.js
+- npm
+- Ganache
+- MetaMask
+- Truffle
+- IPFS Desktop
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/Gk031098/academic-credential-verification.git
+```
+
+### Install Dependencies
+
+Install backend dependencies:
+
+```bash
+npm install
+```
+
+Install frontend dependencies:
+
+```bash
+cd client
+npm install
+```
+
+### Deploy Smart Contracts
+
+Start Ganache, then run:
+
+```bash
+truffle migrate --reset
+```
+
+### Start the React Application
+
+```bash
+cd client
+npm start
+```
+
+The application will be available at:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 👩‍💻 Author
+
+**Auji Kamaruddin**
+
+Bachelor of Information Technology (Hons.)
+
+Universiti Tun Abdul Razak (UNIRAZAK)
+
+Final Year Project (2026)
+
+```
+
