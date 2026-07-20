@@ -1,0 +1,12 @@
+node_modules/
+build/
+dist/
+.env
+.DS_Store
+
+# React
+client/node_modules/
+client/build/
+
+# Truffle
+*.log
