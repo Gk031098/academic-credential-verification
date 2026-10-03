@@ -1,7 +1,7 @@
 import { uploadToIPFS } from "./services/ipfs";
 import { useState } from "react";
 import { ethers } from "ethers";
-import contractData from "./AcademicCredential.json";
+import contractData from "./contracts/AcademicCredential.json";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -15,8 +15,6 @@ import AlertMessage from "./components/AlertMessage";
 import Footer from "./components/Footer";
 import IPFSTest from "./components/IPFSTest";
 import CredentialList from "./components/CredentialList";
-
-const CONTRACT_ADDRESS = "0xF7F42ACfF40117BBb6e9CD8f1eab26167308C367";
 
 function App() {
 
@@ -96,13 +94,20 @@ console.log("Signer address:", address);
 
       setAccount(address);
 
+            // Find where the contract is deployed on the current network
+      const networkId = await provider.send("net_version", []);
+      const deployed = contractData.networks[networkId];
+
+      if (!deployed) {
+        showAlert("danger", "Contract not found on this network. Please switch MetaMask to Ganache.");
+        return;
+      }
+
       const smartContract = new ethers.Contract(
-        CONTRACT_ADDRESS,
+        deployed.address,
         contractData.abi,
         signer
       );
-
-console.log("Contract Address:", CONTRACT_ADDRESS);
 console.log("Contract:", smartContract);
 
 console.log("Contract owner:", await smartContract.owner());
