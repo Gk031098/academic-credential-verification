@@ -16,7 +16,7 @@ import Footer from "./components/Footer";
 import IPFSTest from "./components/IPFSTest";
 import CredentialList from "./components/CredentialList";
 
-const CONTRACT_ADDRESS = "0x3F55189B1DaF6de1E7d7246e94a76761c17344f6";
+const CONTRACT_ADDRESS = "0xF7F42ACfF40117BBb6e9CD8f1eab26167308C367";
 
 function App() {
 
