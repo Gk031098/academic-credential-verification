@@ -179,3 +179,19 @@ footer{
     padding:30px;
 
 }
+
+/* ===== Toast notification (always visible) ===== */
+.toast-fixed {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1080;
+  width: 380px;
+  max-width: calc(100% - 2rem);
+  animation: toast-in 0.3s ease-out;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

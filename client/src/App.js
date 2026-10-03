@@ -66,7 +66,7 @@ const [revokeStudentId, setRevokeStudentId] = useState("");
         ...prev,
         show: false
       }));
-    }, 3000);
+    }, 4000);
   }
 
   async function connectWallet() {
