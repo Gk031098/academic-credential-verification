@@ -14,7 +14,6 @@ import CredentialDetails from "./components/CredentialDetails";
 import RevokeCredential from "./components/RevokeCredential";
 import AlertMessage from "./components/AlertMessage";
 import Footer from "./components/Footer";
-import IPFSTest from "./components/IPFSTest";
 import CredentialList from "./components/CredentialList";
 
 function App() {
@@ -85,13 +84,7 @@ const [revokeStudentId, setRevokeStudentId] = useState("");
 
       const signer = await provider.getSigner();
 
-      const accounts = await provider.send("eth_accounts", []);
-
-console.log("Authorized accounts:", accounts);
-
 const address = await signer.getAddress();
-
-console.log("Signer address:", address);
 
       setAccount(address);
 
@@ -109,18 +102,12 @@ console.log("Signer address:", address);
         contractData.abi,
         signer
       );
-console.log("Contract:", smartContract);
-
-console.log("Contract owner:", await smartContract.owner());
 
 setContract(smartContract);
 
 // Load dashboard statistics
 await loadDashboardStats(smartContract);
 await loadCredentialList(smartContract);
-
-const network = await provider.getNetwork();
-console.log("Chain ID:", network.chainId.toString());
 
 showAlert("success", "Wallet Connected Successfully!");
 
@@ -200,23 +187,7 @@ async function loadCredentialList(smartContract) {
 
   try {
 
-    console.log("Using contract:", contract.target);
-
-    console.log(
-      "Has verifyCredential:",
-      contract.interface.hasFunction("verifyCredential(string)")
-    );
-
-    console.log(
-      "Contract address from ethers:",
-      await contract.getAddress()
-    );
-
-    console.log("Student ID:", studentId);
-
     const credential = await contract.verifyCredential(studentId);
-
-    console.log("Credential:", credential);
 
     setResult({
       studentId: credential[0],
@@ -263,32 +234,11 @@ try {
 
   if (selectedFile) {
 
-    console.log("Step 2 - Uploading to IPFS...");
-
     showAlert("info", "Uploading certificate to IPFS...");
-
-    console.log("Selected File:", selectedFile);
     
     uploadedHash = await uploadToIPFS(selectedFile);
 
-    console.log("Step 3 - IPFS Upload Success");
-    console.log("CID:", uploadedHash);
-
   }
-
-  console.log("Step 4 - Calling Smart Contract");
-
-console.log("Account:", account);
-console.log("Contract Address:", await contract.getAddress());
-console.log("Signer:", await contract.runner.getAddress());
-
-const owner = await contract.owner();
-
-console.log("Owner:", owner);
-console.log(
-  "Is owner?",
-  owner.toLowerCase() === (await contract.runner.getAddress()).toLowerCase()
-);
 
   const tx = await contract.issueCredential(
     newStudentId,
@@ -298,14 +248,10 @@ console.log(
     uploadedHash
   );
 
-  console.log("Step 5 - Transaction Sent");
-
 await tx.wait();
 
 await loadDashboardStats(contract);
 await loadCredentialList(contract);
-
-console.log("Step 6 - Transaction Confirmed");
 
   showAlert("success", "Credential Issued Successfully!");
 
@@ -452,8 +398,6 @@ showAlert(
 <CredentialList
   credentialList={credentialList}
 />
-
-<IPFSTest />
 
 </div>
 

@@ -43,9 +43,9 @@ function IssueCredential({
           onChange={(e) => setProgramme(e.target.value)}
         />
 
-        <input
+                <input
+          type="date"
           className="form-control mb-2"
-          placeholder="Graduation Date"
           value={graduationDate}
           onChange={(e) => setGraduationDate(e.target.value)}
         />
@@ -54,8 +54,10 @@ function IssueCredential({
           Certificate File
         </label>
 
-        <input
+                <input
           type="file"
+          accept="application/pdf"
+          key={selectedFile ? selectedFile.name : "empty"}
           className="form-control mb-3"
           onChange={(e) => setSelectedFile(e.target.files[0])}
         />
