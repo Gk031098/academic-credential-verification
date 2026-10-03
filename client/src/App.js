@@ -2,6 +2,7 @@ import { uploadToIPFS } from "./services/ipfs";
 import { useState } from "react";
 import { ethers } from "ethers";
 import contractData from "./contracts/AcademicCredential.json";
+import { getErrorMessage } from "./utils/errors";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -232,7 +233,8 @@ async function loadCredentialList(smartContract) {
 
     console.error("MetaMask Error:", error);
 
-    alert(JSON.stringify(error, null, 2));
+    setResult(null);
+showAlert("danger", getErrorMessage(error));
 
   }
 
@@ -247,8 +249,16 @@ async function loadCredentialList(smartContract) {
 
 try {
 
-  console.log("Step 1 - issueCredential() started");
+  // Check BEFORE uploading to IPFS or sending a transaction
+  if (!newStudentId || !studentName || !programme || !graduationDate) {
+    showAlert("warning", "Please fill in all fields.");
+    return;
+  }
 
+  if (await contract.credentialExists(newStudentId)) {
+    showAlert("warning", `A credential for ${newStudentId} already exists.`);
+    return;
+  }
   let uploadedHash = "";
 
   if (selectedFile) {
@@ -309,23 +319,7 @@ console.log("Step 6 - Transaction Confirmed");
 
   console.error("Full Error:", error);
 
-  alert(
-    error.message ||
-    error.reason ||
-    error.shortMessage ||
-    "Unknown Error"
-  );
-
-  if (error.info?.error?.message)
-    showAlert("danger", error.info.error.message);
-  else if (error.reason)
-    showAlert("danger", error.reason);
-  else if (error.shortMessage)
-    showAlert("danger", error.shortMessage);
-  else if (error.message)
-    showAlert("danger", error.message);
-  else
-    showAlert("danger", "Failed to issue credential.");
+    showAlert("danger", getErrorMessage(error));
   
 }  // <-- closes catch
 
@@ -342,6 +336,17 @@ async function revokeCredential() {
     }
 
     try {
+
+            if (!(await contract.credentialExists(revokeStudentId))) {
+        showAlert("warning", `No credential found for ${revokeStudentId}.`);
+        return;
+      }
+
+      const existing = await contract.verifyCredential(revokeStudentId);
+      if (existing[6]) {
+        showAlert("warning", `${revokeStudentId} is already revoked.`);
+        return;
+      }
 
       const tx =
         await contract.revokeCredential(revokeStudentId);
@@ -373,14 +378,7 @@ showAlert(
 
       console.error(error);
 
-      if (error.info?.error?.message)
-        showAlert("danger", error.info.error.message);
-      else if (error.reason)
-        showAlert("danger", error.reason);
-      else if (error.shortMessage)
-        showAlert("danger", error.shortMessage);
-      else
-        showAlert("danger", "Failed to revoke credential.");
+            showAlert("danger", getErrorMessage(error));
 
     }
 
