@@ -4,7 +4,7 @@ function VerifyCredential({
   verifyCredential,
 }) {
   return (
-    <div className="card shadow-sm border-0 h-100">
+    <div className="card shadow-sm border-0">
 
       <div className="card-header bg-primary text-white">
         <h5 className="mb-0">
@@ -19,11 +19,12 @@ function VerifyCredential({
           placeholder="Enter Student ID"
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && verifyCredential()}
         />
 
         <button
           className="btn btn-primary w-100"
-          onClick={verifyCredential}
+          onClick={() => verifyCredential()}
         >
           Verify Credential
         </button>

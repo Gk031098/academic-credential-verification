@@ -87,6 +87,17 @@ const [revokeStudentId, setRevokeStudentId] = useState("");
     };
   }, []);
 
+  // If the page was opened with ?id=S001, verify that ID automatically
+  useEffect(() => {
+    const idFromLink = new URLSearchParams(window.location.search).get("id");
+
+    if (idFromLink) {
+      setStudentId(idFromLink);
+      verifyCredential(idFromLink);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function connectWallet() {
 
     if (!window.ethereum) {
@@ -197,16 +208,18 @@ async function loadCredentialList(smartContract) {
 
 }
 
-  async function verifyCredential() {
+    async function verifyCredential(idToCheck = studentId) {
 
-    if (!studentId.trim()) {
-    showAlert("warning", "Please enter a Student ID.");
-    return;
-  }
+    const id = idToCheck.trim();
+
+    if (!id) {
+      showAlert("warning", "Please enter a Student ID.");
+      return;
+    }
 
   try {
 
-    const credential = await readOnlyContract.verifyCredential(studentId.trim());
+    const credential = await readOnlyContract.verifyCredential(id);
 
     setResult({
       studentId: credential[0],
