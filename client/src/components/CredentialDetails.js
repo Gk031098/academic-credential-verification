@@ -1,6 +1,19 @@
+import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+  
 function CredentialDetails({ result }) {
 
+  const [copied, setCopied] = useState(false);
+
   if (!result) return null;
+
+   const shareLink = `${window.location.origin}/?id=${encodeURIComponent(result.studentId)}`;
+
+  async function copyLink() {
+    await navigator.clipboard.writeText(shareLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } 
 
   return (
     <div className="card shadow-sm border-0 mt-4">
@@ -89,6 +102,34 @@ function CredentialDetails({ result }) {
           </tbody>
 
         </table>
+
+                <div className="bg-light border rounded p-3 mt-3 d-flex flex-column flex-md-row align-items-center gap-3">
+
+          <QRCodeSVG value={shareLink} size={120} />
+
+          <div className="flex-grow-1 w-100">
+            <h6 className="mb-1">Share this verification</h6>
+            <p className="text-muted small mb-2">
+              Scan the QR code or send this link. Anyone can verify this credential, no wallet needed.
+            </p>
+
+            <div className="input-group">
+              <input
+                className="form-control form-control-sm"
+                value={shareLink}
+                readOnly
+              />
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={copyLink}
+              >
+                <i className="bi bi-clipboard me-1"></i>
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </div>
+
+        </div>
 
       </div>
 
