@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractData from "./contracts/AcademicCredential.json";
 import { getErrorMessage } from "./utils/errors";
-import { readOnlyContract } from "./services/blockchain";
+import { readOnlyContract, NETWORK_ID, NETWORK_NAME } from "./services/blockchain";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -115,16 +115,17 @@ const [revokeStudentId, setRevokeStudentId] = useState("");
 
 const address = await signer.getAddress();
 
-      setAccount(address);
-
             // Find where the contract is deployed on the current network
-      const networkId = await provider.send("net_version", []);
-      const deployed = contractData.networks[networkId];
+                  const networkId = await provider.send("net_version", []);
 
-      if (!deployed) {
-        showAlert("danger", "Contract not found on this network. Please switch MetaMask to Ganache.");
+      if (networkId !== NETWORK_ID) {
+        showAlert("warning", `Please switch MetaMask to the ${NETWORK_NAME} network.`);
         return;
       }
+
+      const deployed = contractData.networks[networkId];
+
+      setAccount(address);
 
       const smartContract = new ethers.Contract(
         deployed.address,
