@@ -22,6 +22,7 @@ function App() {
   const [account, setAccount] = useState("");
   const [contract, setContract] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
+      const [page, setPage] = useState("verify");
 
   // Verify
   const [studentId, setStudentId] = useState("");
@@ -351,10 +352,8 @@ showAlert(
   }
 
   return (
-
     <>
-
-      <Navbar />
+      <Navbar page={page} setPage={setPage} isOwner={isOwner} />
 
       <div className="container py-5">
 
@@ -364,68 +363,70 @@ showAlert(
 
         <WalletCard
           account={account}
-           isOwner={isOwner}
+          isOwner={isOwner}
           connectWallet={connectWallet}
         />
 
-        <DashboardCards
-          account={account}
-          totalCredentials={totalCredentials}
-          revokedCredentials={revokedCredentials}
-        />
-
-        <div className="row">
-
-          <div className="col-lg-6 mb-4">
-
-            <VerifyCredential
-              studentId={studentId}
-              setStudentId={setStudentId}
-              verifyCredential={verifyCredential}
-            />
-
+        {page === "verify" && (
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <VerifyCredential
+                studentId={studentId}
+                setStudentId={setStudentId}
+                verifyCredential={verifyCredential}
+              />
+              <CredentialDetails result={result} />
+            </div>
           </div>
+        )}
 
-          <div className="col-lg-6 mb-4">
-
-            <IssueCredential
-              newStudentId={newStudentId}
-              setNewStudentId={setNewStudentId}
-              studentName={studentName}
-              setStudentName={setStudentName}
-              programme={programme}
-              setProgramme={setProgramme}
-              graduationDate={graduationDate}
-              setGraduationDate={setGraduationDate}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-              issueCredential={issueCredential}
-            />
-
+        {page === "issue" && isOwner && (
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <IssueCredential
+                newStudentId={newStudentId}
+                setNewStudentId={setNewStudentId}
+                studentName={studentName}
+                setStudentName={setStudentName}
+                programme={programme}
+                setProgramme={setProgramme}
+                graduationDate={graduationDate}
+                setGraduationDate={setGraduationDate}
+                selectedFile={selectedFile}
+                setSelectedFile={setSelectedFile}
+                issueCredential={issueCredential}
+              />
+            </div>
           </div>
+        )}
 
-        </div>
+        {page === "revoke" && isOwner && (
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <RevokeCredential
+                revokeStudentId={revokeStudentId}
+                setRevokeStudentId={setRevokeStudentId}
+                revokeCredential={revokeCredential}
+              />
+            </div>
+          </div>
+        )}
 
-<CredentialDetails
-  result={result}
-/>
+        {page === "records" && isOwner && (
+          <>
+            <DashboardCards
+              account={account}
+              totalCredentials={totalCredentials}
+              revokedCredentials={revokedCredentials}
+            />
+            <CredentialList credentialList={credentialList} />
+          </>
+        )}
 
-<RevokeCredential
-  revokeStudentId={revokeStudentId}
-  setRevokeStudentId={setRevokeStudentId}
-  revokeCredential={revokeCredential}
-/>
+      </div>
 
-<CredentialList
-  credentialList={credentialList}
-/>
-
-</div>
-
-<Footer />
-
+      <Footer />
     </>
-
   );
 
 }
