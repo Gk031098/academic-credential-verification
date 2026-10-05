@@ -1,4 +1,4 @@
-function WalletCard({ account, connectWallet }) {
+function WalletCard({ account, isOwner, connectWallet }) {
   return (
     <div className="card shadow-sm border-0 mb-4">
 
@@ -17,6 +17,22 @@ function WalletCard({ account, connectWallet }) {
               {account || "Wallet not connected"}
             </small>
 
+            {account && (
+              <div className="mt-2">
+                {isOwner ? (
+                  <span className="badge bg-success">
+                    <i className="bi bi-shield-lock-fill me-1"></i>
+                    Administrator
+                  </span>
+                ) : (
+                  <span className="badge bg-secondary">
+                    <i className="bi bi-person-check-fill me-1"></i>
+                    Verifier
+                  </span>
+                )}
+              </div>
+            )}
+
           </div>
 
           <div className="col-md-3 text-end">
@@ -24,9 +40,10 @@ function WalletCard({ account, connectWallet }) {
             <button
               className="btn btn-primary"
               onClick={connectWallet}
+              disabled={!!account}
             >
               <i className="bi bi-plug-fill"></i>{" "}
-              Connect MetaMask
+              {account ? "Connected" : "Connect MetaMask"}
             </button>
 
           </div>

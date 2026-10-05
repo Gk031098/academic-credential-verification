@@ -1,5 +1,5 @@
 import { uploadToIPFS } from "./services/ipfs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractData from "./contracts/AcademicCredential.json";
 import { getErrorMessage } from "./utils/errors";
@@ -21,6 +21,7 @@ function App() {
   // Wallet
   const [account, setAccount] = useState("");
   const [contract, setContract] = useState(null);
+    const [isOwner, setIsOwner] = useState(false);
 
   // Verify
   const [studentId, setStudentId] = useState("");
@@ -69,6 +70,21 @@ const [revokeStudentId, setRevokeStudentId] = useState("");
     }, 4000);
   }
 
+    // Reload the page if the user switches account or network in MetaMask
+  useEffect(() => {
+    if (!window.ethereum) return;
+
+    const handleChange = () => window.location.reload();
+
+    window.ethereum.on("accountsChanged", handleChange);
+    window.ethereum.on("chainChanged", handleChange);
+
+    return () => {
+      window.ethereum.removeListener("accountsChanged", handleChange);
+      window.ethereum.removeListener("chainChanged", handleChange);
+    };
+  }, []);
+
   async function connectWallet() {
 
     if (!window.ethereum) {
@@ -104,6 +120,10 @@ const address = await signer.getAddress();
       );
 
 setContract(smartContract);
+
+      // Is the connected wallet the contract owner (admin)?
+      const owner = await smartContract.owner();
+      setIsOwner(owner.toLowerCase() === address.toLowerCase());
 
 // Load dashboard statistics
 await loadDashboardStats(smartContract);
@@ -344,6 +364,7 @@ showAlert(
 
         <WalletCard
           account={account}
+           isOwner={isOwner}
           connectWallet={connectWallet}
         />
 
