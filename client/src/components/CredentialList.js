@@ -43,7 +43,7 @@ function CredentialList({ credentialList }) {
                     <td>
                       {credential.ipfsHash ? (
                         <a
-                          href={`http://127.0.0.1:8080/ipfs/${credential.ipfsHash}`}
+                          href={`http://${window.location.hostname}:8080/ipfs/${credential.ipfsHash}`}
                           target="_blank"
                           rel="noreferrer"
                           className="btn btn-sm btn-primary"

@@ -7,7 +7,8 @@ function CredentialDetails({ result }) {
 
   if (!result) return null;
 
-   const shareLink = `${window.location.origin}/?id=${encodeURIComponent(result.studentId)}`;
+  const baseUrl = process.env.REACT_APP_PUBLIC_URL || window.location.origin;
+  const shareLink = `${baseUrl}/?id=${encodeURIComponent(result.studentId)}`;
 
   async function copyLink() {
     await navigator.clipboard.writeText(shareLink);
@@ -80,7 +81,7 @@ function CredentialDetails({ result }) {
                 {result.ipfsHash ? (
 
                   <a
-                    href={`http://127.0.0.1:8080/ipfs/${result.ipfsHash}`}
+                    href={`http://${window.location.hostname}:8080/ipfs/${result.ipfsHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-outline-primary btn-sm"
