@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractData from "./contracts/AcademicCredential.json";
 import { getErrorMessage } from "./utils/errors";
+import { readOnlyContract } from "./services/blockchain";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -198,17 +199,14 @@ async function loadCredentialList(smartContract) {
 
   async function verifyCredential() {
 
-  if (!contract) {
-
-    showAlert("warning", "Please connect MetaMask first.");
-
+    if (!studentId.trim()) {
+    showAlert("warning", "Please enter a Student ID.");
     return;
-
   }
 
   try {
 
-    const credential = await contract.verifyCredential(studentId);
+    const credential = await readOnlyContract.verifyCredential(studentId.trim());
 
     setResult({
       studentId: credential[0],
