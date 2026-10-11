@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { IPFS_GATEWAY } from "../services/ipfs";
-  
+import { formatDate, formatTimestamp, shortenHash } from "../utils/format";
+
 function CredentialDetails({ result }) {
 
   const [copied, setCopied] = useState(false);
@@ -15,97 +16,76 @@ function CredentialDetails({ result }) {
     await navigator.clipboard.writeText(shareLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  } 
+  }
 
   return (
     <div className="card shadow-sm border-0 mt-4">
 
-      <div className="card-header bg-primary text-white">
-        <h5 className="mb-0">
-          Credential Details
-        </h5>
-      </div>
+      <div className="card-body p-4">
 
-      <div className="card-body">
+        <div className={`verify-banner ${result.revoked ? "revoked" : "valid"}`}>
+          <i className={`bi ${result.revoked ? "bi-x-octagon-fill" : "bi-patch-check-fill"}`}></i>
+          <div>
+            <h4 className="mb-1">
+              {result.revoked ? "Credential Revoked" : "Credential Verified"}
+            </h4>
+            <p className="mb-0">
+              {result.revoked
+                ? "This credential was revoked by the university and is no longer valid."
+                : "This credential is authentic and recorded on the blockchain."}
+            </p>
+          </div>
+        </div>
 
-        <table className="table">
-
+        <table className="table align-middle mb-0">
           <tbody>
-
             <tr>
-              <th width="30%">Student ID</th>
-              <td>{result.studentId}</td>
+              <th className="text-muted fw-normal" style={{ width: "35%" }}>Student ID</th>
+              <td className="fw-semibold">{result.studentId}</td>
             </tr>
-
             <tr>
-              <th>Student Name</th>
-              <td>{result.studentName}</td>
+              <th className="text-muted fw-normal">Student Name</th>
+              <td className="fw-semibold">{result.studentName}</td>
             </tr>
-
             <tr>
-              <th>Programme</th>
+              <th className="text-muted fw-normal">Programme</th>
               <td>{result.programme}</td>
             </tr>
-
             <tr>
-              <th>Graduation Date</th>
-              <td>{result.graduationDate}</td>
+              <th className="text-muted fw-normal">Graduation Date</th>
+              <td>{formatDate(result.graduationDate)}</td>
             </tr>
-
             <tr>
-              <th>Status</th>
-
+              <th className="text-muted fw-normal">Recorded on Blockchain</th>
+              <td>{formatTimestamp(result.issueDate)}</td>
+            </tr>
+            <tr>
+              <th className="text-muted fw-normal">Certificate</th>
               <td>
-                {result.revoked ? (
-                  <span className="badge bg-danger">
-                    Revoked
-                  </span>
-                ) : (
-                  <span className="badge bg-success">
-                    Valid
-                  </span>
-                )}
-              </td>
-
-            </tr>
-
-            <tr>
-              <th>IPFS CID</th>
-              <td>{result.ipfsHash}</td>
-            </tr>
-
-            <tr>
-              <th>Certificate</th>
-
-              <td>
-
                 {result.ipfsHash ? (
-
-                  <a
-                                        href={`${IPFS_GATEWAY}${result.ipfsHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline-primary btn-sm"
-                  >
-                    📄 View Certificate
-                  </a>
-
+                  <div className="d-flex flex-wrap align-items-center gap-2">
+                    <a
+                      href={`${IPFS_GATEWAY}${result.ipfsHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-primary btn-sm"
+                    >
+                      <i className="bi bi-file-earmark-pdf me-1"></i>
+                      View Certificate
+                    </a>
+                    <code className="small text-muted" title={result.ipfsHash}>
+                      {shortenHash(result.ipfsHash)}
+                    </code>
+                  </div>
                 ) : (
-
-                  <span className="text-muted">
-                    No certificate uploaded
-                  </span>
-
+                  <span className="text-muted">No certificate uploaded</span>
                 )}
-
               </td>
             </tr>
-
           </tbody>
-
         </table>
 
-                <div className="bg-light border rounded p-3 mt-3 d-flex flex-column flex-md-row align-items-center gap-3">
+        <div className="bg-light border rounded p-3 mt-4 d-flex flex-column flex-md-row align-items-center gap-3">
 
           <QRCodeSVG value={shareLink} size={120} />
 

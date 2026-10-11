@@ -228,6 +228,7 @@ async function loadCredentialList(smartContract) {
       programme: credential[2],
       graduationDate: credential[3],
       ipfsHash: credential[4],
+            issueDate: Number(credential[5]),
       revoked: credential[6]
     });
 
