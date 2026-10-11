@@ -7,7 +7,6 @@ import { readOnlyContract, NETWORK_ID, NETWORK_NAME } from "./services/blockchai
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
-import WalletCard from "./components/WalletCard";
 import DashboardCards from "./components/DashboardCards";
 import VerifyCredential from "./components/VerifyCredential";
 import IssueCredential from "./components/IssueCredential";
@@ -137,14 +136,19 @@ setContract(smartContract);
 
       // Is the connected wallet the contract owner (admin)?
       const owner = await smartContract.owner();
-      setIsOwner(owner.toLowerCase() === address.toLowerCase());
+      const isAdmin = owner.toLowerCase() === address.toLowerCase();
+      setIsOwner(isAdmin);
 
 // Load dashboard statistics
 await loadDashboardStats(smartContract);
 await loadCredentialList(smartContract);
 
-showAlert("success", "Wallet Connected Successfully!");
-
+      if (isAdmin) {
+        showAlert("success", "Logged in as university administrator.");
+      } else {
+        showAlert("warning", "This wallet is not the university administrator. You can still verify credentials.");
+      }
+      
     } catch (error) { 
 
       console.error(error);
@@ -366,19 +370,19 @@ showAlert(
 
   return (
     <>
-      <Navbar page={page} setPage={setPage} isOwner={isOwner} />
+            <Navbar
+        page={page}
+        setPage={setPage}
+        isOwner={isOwner}
+        account={account}
+        connectWallet={connectWallet}
+      />
 
-      <div className="container py-5">
+      <div className="container py-4">
 
-        <Header />
+        {page === "verify" && <Header />}
 
         <AlertMessage alert={alertState} />
-
-        <WalletCard
-          account={account}
-          isOwner={isOwner}
-          connectWallet={connectWallet}
-        />
 
         {page === "verify" && (
           <div className="row justify-content-center">
