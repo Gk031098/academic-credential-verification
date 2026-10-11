@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "start": "npm --prefix client start",
+    "test": "truffle test",
     "migrate": "truffle migrate --reset",
     "migrate:sepolia": "truffle migrate --network sepolia"
   },
