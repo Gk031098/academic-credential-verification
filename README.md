@@ -1,264 +1,230 @@
 # 🎓 Academic Credential Verification Portal
 
-> Final Year Project (FYP)
+> Final Year Project (FYP) — Bachelor of Information Technology (Hons.)
+> Universiti Tun Abdul Razak (UNIRAZAK)
 
-Bachelor of Information Technology (Hons.)
+🌐 **Live demo:** https://academic-credential-verification-nu.vercel.app
+⛓️ **Smart contract (Ethereum Sepolia):** [`0x33b2e94F4b28dF5e04d5C79f34Ae875B4a36c011`](https://sepolia.etherscan.io/address/0x33b2e94F4b28dF5e04d5C79f34Ae875B4a36c011)
 
-Universiti Tun Abdul Razak (UNIRAZAK)
+Try it: open the live demo and verify Student ID **`DEMO002`** — no wallet needed.
 
 ---
 
 ## 📖 Project Overview
 
-The Academic Credential Verification Portal is a blockchain-based web application developed to provide a secure, transparent, and decentralized platform for issuing, verifying, and revoking academic credentials.
+The Academic Credential Verification Portal is a blockchain-based web application for issuing, verifying, and revoking academic credentials.
 
-The system leverages Ethereum smart contracts to ensure credential integrity and uses the InterPlanetary File System (IPFS) to store supporting documents securely. By eliminating reliance on centralized verification methods, the platform reduces credential fraud and enables faster verification by employers, educational institutions, and other authorized parties.
+Credential records are stored on the **Ethereum** blockchain through a Solidity smart contract, and supporting PDF certificates are stored on **IPFS**. Anyone — such as an employer or recruiter — can verify a credential instantly by entering a Student ID or scanning a QR code, **without needing a crypto wallet**. Only the university administrator can issue or revoke credentials.
 
 ---
 
 ## 💡 Problem Statement
 
-Traditional academic credential verification is often performed manually, making the process slow, costly, and vulnerable to fraudulent certificates.
+Traditional academic credential verification is often manual, slow, costly, and vulnerable to fake certificates. Employers usually have to contact the university and wait for confirmation.
 
-This project addresses these challenges by implementing blockchain technology to create an immutable record of issued credentials while utilizing decentralized file storage to securely manage supporting documents.
+This project uses blockchain technology to create a tamper-proof record of issued credentials, and decentralized storage (IPFS) for supporting documents, so verification becomes instant, transparent, and trustworthy.
 
 ---
 
 ## 🎯 Objectives
 
 - Develop a decentralized academic credential verification system.
-- Implement Ethereum smart contracts for credential issuance and verification.
+- Implement Ethereum smart contracts for credential issuance, verification, and revocation.
 - Store supporting documents securely using IPFS.
-- Enable credential revocation by authorized administrators.
-- Improve transparency, security, and trust in academic credential verification.
+- Allow anyone to verify credentials publicly without a wallet.
+- Restrict issuing and revoking to the authorized administrator.
 
 ---
 
 ## ✨ Features
 
-The Academic Credential Verification Portal provides the following core functionalities:
+- ✅ **Public verification (no wallet needed)** — enter a Student ID and see a clear **VERIFIED** or **REVOKED** result read directly from the blockchain.
+- 📱 **Shareable link & QR code** — every verified credential has a link (`/?id=...`) and QR code that opens the result instantly on any device.
+- 🔐 **Admin login with MetaMask** — the website detects whether the connected wallet is the contract owner and only then shows admin features.
+- 🎓 **Issue credentials** — upload the PDF certificate to IPFS and record the details plus the IPFS CID on the blockchain.
+- 🚫 **Revoke credentials** — revoked credentials are clearly shown as REVOKED to anyone who verifies them.
+- 📋 **Records & dashboard** — view all credentials and statistics (total, valid, revoked).
+- 🕒 **Blockchain timestamp** — shows exactly when each credential was recorded on-chain.
+- 📲 **Responsive design** — works on desktop and mobile.
 
-- 🔐 **MetaMask Wallet Authentication**
-  - Secure login using MetaMask wallet.
-  - Displays the connected Ethereum account.
-
-- 🎓 **Issue Academic Credentials**
-  - Issue academic credentials to students.
-  - Upload supporting PDF certificates to IPFS.
-  - Store the IPFS Content Identifier (CID) securely on the Ethereum blockchain.
-
-- ✅ **Verify Credentials**
-  - Verify the authenticity of issued credentials.
-  - Retrieve credential details directly from the blockchain.
-  - Access supporting documents stored on IPFS.
-
-- 🚫 **Revoke Credentials**
-  - Revoke previously issued credentials.
-  - Prevent revoked credentials from being considered valid during verification.
-
-- 📋 **Credential Management**
-  - View all issued credentials.
-  - Monitor credential status.
-  - Display credential details in a user-friendly interface.
-
-- 📊 **Dashboard**
-  - View total credentials issued.
-  - View active and revoked credentials.
-  - Display the connected wallet address.
-
-  ---
+---
 
 ## 🛠️ Technology Stack
 
 | Category | Technology |
 |----------|------------|
-| Frontend | React.js |
-| Programming Language | JavaScript (ES6) |
-| Smart Contract | Solidity |
-| Blockchain Network | Ethereum (Local Development using Ganache) |
+| Frontend | React.js, Bootstrap 5, Bootstrap Icons |
+| Smart Contract | Solidity 0.8.20 |
+| Blockchain | Ethereum Sepolia testnet (local development: Ganache) |
 | Development Framework | Truffle Suite |
-| Wallet Integration | MetaMask |
-| Decentralized Storage | IPFS (InterPlanetary File System) |
 | Blockchain Library | ethers.js v6 |
-| Styling | CSS3 |
+| Wallet | MetaMask |
+| Decentralized Storage | IPFS via Pinata (local development: IPFS Desktop) |
+| QR Codes | qrcode.react |
+| Hosting | Vercel (auto-deploys from GitHub) |
+| Testing | Truffle tests (Mocha / Chai) |
 | Version Control | Git & GitHub |
+
+---
+
+## 🏗️ System Architecture
+
+```text
+                 Recruiter / Employer                University Admin
+                (any browser or phone)            (browser + MetaMask)
+                          │                                │
+                          ▼                                ▼
+                 ┌──────────────────────────────────────────────┐
+                 │        React web app (hosted on Vercel)       │
+                 └──────────────────────────────────────────────┘
+                     │ read (free,                │ write (signed
+                     │ no wallet)                 │ by MetaMask)
+                     ▼                            ▼
+                 ┌──────────────────────────────────────────────┐
+                 │   AcademicCredential.sol  (Ethereum Sepolia)  │
+                 │   stores: student details, IPFS CID, status   │
+                 └──────────────────────────────────────────────┘
+                                       │ CID
+                                       ▼
+                 ┌──────────────────────────────────────────────┐
+                 │        IPFS (Pinata) — PDF certificates       │
+                 └──────────────────────────────────────────────┘
+```
+
+Only the IPFS **CID** (a unique fingerprint of the file) is stored on the blockchain — not the PDF itself — which keeps blockchain costs low while still proving the document has not been changed.
+
+---
+
+## ⚙️ System Workflow
+
+**Issuing (admin)**
+1. The administrator logs in with MetaMask (the contract owner's wallet).
+2. Enters the student's details and selects the PDF certificate.
+3. The PDF is uploaded to IPFS, which returns a CID.
+4. The smart contract records the details, CID, and a timestamp on the blockchain.
+
+**Verifying (anyone)**
+1. Enter a Student ID, or scan the QR code / open the shared link.
+2. The website reads the credential directly from the blockchain (no wallet required).
+3. The result is shown as **VERIFIED** or **REVOKED**, with a link to the certificate on IPFS.
+
+**Revoking (admin)**
+1. The administrator enters a Student ID and confirms in MetaMask.
+2. The credential is permanently marked as revoked on the blockchain.
+
+---
+
+## 📸 Application Screenshots
+
+### Public Verification
+![Verify page](docs/screenshots/verify.png)
+
+### Verified Result with QR Code
+![Verified result](docs/screenshots/verified.png)
+
+### Revoked Result
+![Revoked result](docs/screenshots/revoked.png)
+
+### Issue Credential (Admin)
+![Issue credential](docs/screenshots/issue.png)
+
+### Records Dashboard (Admin)
+![Records](docs/screenshots/records.png)
+
+### Mobile View
+![Mobile view](docs/screenshots/mobile.png)
+
+### Smart Contract Tests
+![Tests passing](docs/screenshots/tests.png)
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-academic-credential-verification/
-│
-├── client/                     # React frontend
+credential-verification/
+├── client/                      # React frontend
 │   ├── public/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── services/
-│   │   ├── App.js
-│   │   ├── contract.js
-│   │   └── index.js
-│   ├── package.json
-│   └── package-lock.json
-│
-├── contracts/                  # Solidity smart contracts
-│   ├── AcademicCredential.sol
-│   └── Migrations.sol
-│
-├── migrations/                 # Truffle migration scripts
-│
-├── test/                       # Smart contract tests
-│
-├── truffle-config.js           # Truffle configuration
-│
-└── README.md
+│   │   ├── components/          # UI components (Navbar, VerifyCredential, ...)
+│   │   ├── contracts/           # Contract ABI + addresses (generated by Truffle)
+│   │   ├── services/            # blockchain.js (read-only provider), ipfs.js (uploads)
+│   │   ├── utils/               # errors.js, format.js
+│   │   └── App.js
+│   ├── .env.example             # Frontend settings template
+│   └── package.json
+├── contracts/                   # Solidity smart contracts
+│   └── AcademicCredential.sol
+├── migrations/                  # Truffle deployment scripts
+├── test/                        # Smart contract tests
+├── truffle-config.js            # Networks: development (Ganache), sepolia
+├── .env.example                 # Deployment settings template
+└── package.json                 # Root scripts (start, test, migrate)
 ```
 
 ---
 
-## 🏗️ System Architecture
-
-The Academic Credential Verification Portal follows a decentralized architecture that integrates a React frontend, Ethereum blockchain, MetaMask wallet, Solidity smart contracts, and the InterPlanetary File System (IPFS).
-
-The React application provides the user interface for administrators to issue, verify, and revoke academic credentials. MetaMask acts as the authentication layer and enables secure interaction with the Ethereum blockchain. Smart contracts manage credential records, while supporting PDF certificates are stored securely on IPFS. The blockchain stores only the credential information and the corresponding IPFS Content Identifier (CID), ensuring data integrity while minimizing on-chain storage.
-
-```text
-                    +-----------------------------+
-                    |          React.js           |
-                    |       User Interface        |
-                    +-------------+---------------+
-                                  |
-                                  | ethers.js
-                                  |
-                    +-------------v---------------+
-                    |         MetaMask            |
-                    |      Ethereum Wallet        |
-                    +-------------+---------------+
-                                  |
-                                  |
-                    +-------------v---------------+
-                    |   Solidity Smart Contract   |
-                    |  AcademicCredential.sol     |
-                    +-------------+---------------+
-                                  |
-                 +----------------+----------------+
-                 |                                 |
-                 |                                 |
-        +--------v--------+              +---------v---------+
-        | Ethereum Chain  |              |       IPFS        |
-        | Credential Data |              | PDF Certificates  |
-        +-----------------+              +-------------------+
-```
-
----
-
-## ⚙️ System Workflow
-
-1. The administrator connects their Ethereum wallet using MetaMask.
-2. A student's academic credential information is entered into the system.
-3. The supporting PDF certificate is uploaded to IPFS.
-4. IPFS returns a unique Content Identifier (CID).
-5. The smart contract stores:
-   - Student information
-   - Credential details
-   - IPFS CID
-   - Credential status
-6. During verification, the smart contract retrieves the credential information from the blockchain.
-7. The corresponding PDF certificate is accessed securely through IPFS using the stored CID.
-8. If a credential has been revoked, the verification result clearly indicates its revoked status.
-
----
-
-## 📸 Application Screenshots
-
-### Dashboard
-
-*Coming Soon*
-
-### Issue Credential
-
-*Coming Soon*
-
-### Verify Credential
-
-*Coming Soon*
-
-### Revoke Credential
-
-*Coming Soon*
-
-### Credential List
-
-*Coming Soon*
-
----
-
-## 🚀 Installation
+## 🚀 Running the Project Locally
 
 ### Prerequisites
+- Node.js (v18+), npm
+- Truffle (`npm install -g truffle`)
+- Ganache (for local development and tests)
+- MetaMask browser extension
 
-Ensure the following software is installed:
-
-- Node.js
-- npm
-- Ganache
-- MetaMask
-- Truffle
-- IPFS Desktop
-
-### Clone the Repository
-
+### 1. Clone and install
 ```bash
 git clone https://github.com/Gk031098/academic-credential-verification.git
-```
-
-### Install Dependencies
-
-Install backend dependencies:
-
-```bash
+cd academic-credential-verification
 npm install
+npm --prefix client install
 ```
 
-Install frontend dependencies:
-
+### 2. Configure environment variables
 ```bash
-cd client
-npm install
+cp .env.example .env
+cp client/.env.example client/.env
+```
+Fill in your own values. To run fully locally, remove the `REACT_APP_RPC_URL`, `REACT_APP_NETWORK_ID`, `REACT_APP_NETWORK_NAME`, `REACT_APP_PINATA_JWT` and `REACT_APP_IPFS_GATEWAY` lines — the app then uses Ganache and IPFS Desktop.
+
+### 3. Deploy the smart contract
+Local (Ganache running on port 7545):
+```bash
+npm run migrate
+```
+Sepolia testnet (needs Sepolia test ETH in the deployer wallet):
+```bash
+npm run migrate:sepolia
 ```
 
-### Deploy Smart Contracts
-
-Start Ganache, then run:
-
+### 4. Start the website
 ```bash
-truffle migrate --reset
-```
-
-### Start the React Application
-
-```bash
-cd client
 npm start
 ```
+Open http://localhost:3000
 
-The application will be available at:
+### 5. Run the smart contract tests
+With Ganache running:
+```bash
+npm test
+```
 
-```
-http://localhost:3000
-```
+---
+
+## 🔒 Security Notes & Limitations
+
+- **Access control:** only the contract owner can issue or revoke (`onlyOwner`). Hiding admin features in the UI is for usability; the real protection is in the smart contract.
+- **Public data:** blockchain data is public and permanent. This prototype stores student names on-chain for demonstration and uses **fictional data only**. A production system should store only a hash of personal data to comply with privacy laws (e.g. Malaysia's PDPA).
+- **IPFS upload key:** for this prototype, the Pinata key is restricted to upload-only. In production, uploads should go through a backend that verifies the administrator's signature.
+- **Single administrator:** one wallet controls issuing. A production system could use multi-signature wallets or role-based access for multiple staff.
+- **Testnet:** the system runs on the Sepolia test network; test ETH has no real value.
+- **Tooling:** Truffle is now deprecated; a future version could migrate to Hardhat or Foundry.
 
 ---
 
 ## 👩‍💻 Author
 
 **Auji Kamaruddin**
-
 Bachelor of Information Technology (Hons.)
-
 Universiti Tun Abdul Razak (UNIRAZAK)
-
 Final Year Project (2026)
-
-```
-
