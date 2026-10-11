@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import contractData from "./contracts/AcademicCredential.json";
 import { getErrorMessage } from "./utils/errors";
-import { readOnlyContract, NETWORK_ID, NETWORK_NAME } from "./services/blockchain";
+import { readOnlyContract, NETWORK_ID, NETWORK_NAME, CHAIN_ID_HEX } from "./services/blockchain";
 
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
@@ -118,8 +118,14 @@ const address = await signer.getAddress();
             // Find where the contract is deployed on the current network
                   const networkId = await provider.send("net_version", []);
 
-      if (networkId !== NETWORK_ID) {
-        showAlert("warning", `Please switch MetaMask to the ${NETWORK_NAME} network.`);
+            if (networkId !== NETWORK_ID) {
+        try {
+          // Ask MetaMask to switch network. The page reloads after switching
+          // (our chainChanged listener), then click Admin login again.
+          await provider.send("wallet_switchEthereumChain", [{ chainId: CHAIN_ID_HEX }]);
+        } catch {
+          showAlert("warning", `Please switch MetaMask to the ${NETWORK_NAME} network.`);
+        }
         return;
       }
 
