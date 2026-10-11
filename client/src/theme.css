@@ -183,7 +183,7 @@ footer{
 /* ===== Toast notification (always visible) ===== */
 .toast-fixed {
   position: fixed;
-  top: 1.5rem;
+  top: 5.5rem;
   right: 1.5rem;
   z-index: 1080;
   width: 380px;

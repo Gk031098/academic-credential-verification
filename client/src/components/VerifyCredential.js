@@ -1,8 +1,4 @@
-function VerifyCredential({
-  studentId,
-  setStudentId,
-  verifyCredential,
-}) {
+function VerifyCredential({ studentId, setStudentId, verifyCredential, busy }) {
   return (
     <div className="card shadow-sm border-0">
 
@@ -19,14 +15,22 @@ function VerifyCredential({
           placeholder="Enter Student ID"
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && verifyCredential()}
+          onKeyDown={(e) => e.key === "Enter" && verifyCredential()}
         />
 
         <button
           className="btn btn-primary w-100"
           onClick={() => verifyCredential()}
+          disabled={!!busy}
         >
-          Verify Credential
+          {busy ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2"></span>
+              {busy}
+            </>
+          ) : (
+            "Verify Credential"
+          )}
         </button>
 
       </div>

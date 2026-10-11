@@ -23,6 +23,7 @@ function App() {
   const [contract, setContract] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
       const [page, setPage] = useState("verify");
+        const [busy, setBusy] = useState("");
 
   // Verify
   const [studentId, setStudentId] = useState("");
@@ -148,7 +149,7 @@ await loadCredentialList(smartContract);
       } else {
         showAlert("warning", "This wallet is not the university administrator. You can still verify credentials.");
       }
-      
+
     } catch (error) { 
 
       console.error(error);
@@ -213,8 +214,7 @@ async function loadCredentialList(smartContract) {
 
 }
 
-    async function verifyCredential(idToCheck = studentId) {
-
+      async function verifyCredential(idToCheck = studentId) {
     const id = idToCheck.trim();
 
     if (!id) {
@@ -222,150 +222,135 @@ async function loadCredentialList(smartContract) {
       return;
     }
 
-  try {
+    try {
+      setBusy("Checking the blockchain…");
 
-    const credential = await readOnlyContract.verifyCredential(id);
+      const credential = await readOnlyContract.verifyCredential(id);
 
-    setResult({
-      studentId: credential[0],
-      studentName: credential[1],
-      programme: credential[2],
-      graduationDate: credential[3],
-      ipfsHash: credential[4],
-            issueDate: Number(credential[5]),
-      revoked: credential[6]
-    });
-
-    showAlert("success", "Credential verified successfully.");
-
-  } catch (error) {
-
-    console.error("MetaMask Error:", error);
-
-    setResult(null);
-showAlert("danger", getErrorMessage(error));
-
+      setResult({
+        studentId: credential[0],
+        studentName: credential[1],
+        programme: credential[2],
+        graduationDate: credential[3],
+        ipfsHash: credential[4],
+        issueDate: Number(credential[5]),
+        revoked: credential[6],
+      });
+    } catch (error) {
+      console.error("Verify error:", error);
+      setResult(null);
+      showAlert("danger", getErrorMessage(error));
+    } finally {
+      setBusy("");
+    }
   }
-
-}
 
   async function issueCredential() {
-
-  if (!contract) {
-    showAlert("warning", "Please connect MetaMask first.");
-    return;
-  }
-
-try {
-
-  // Check BEFORE uploading to IPFS or sending a transaction
-  if (!newStudentId || !studentName || !programme || !graduationDate) {
-    showAlert("warning", "Please fill in all fields.");
-    return;
-  }
-
-  if (await contract.credentialExists(newStudentId)) {
-    showAlert("warning", `A credential for ${newStudentId} already exists.`);
-    return;
-  }
-  let uploadedHash = "";
-
-  if (selectedFile) {
-
-    showAlert("info", "Uploading certificate to IPFS...");
-    
-    uploadedHash = await uploadToIPFS(selectedFile);
-
-  }
-
-  const tx = await contract.issueCredential(
-    newStudentId,
-    studentName,
-    programme,
-    graduationDate,
-    uploadedHash
-  );
-
-await tx.wait();
-
-await loadDashboardStats(contract);
-await loadCredentialList(contract);
-
-  showAlert("success", "Credential Issued Successfully!");
-
-  setNewStudentId("");
-  setStudentName("");
-  setProgramme("");
-  setGraduationDate("");
-  setSelectedFile(null);
-
-} catch (error) {
-
-  console.error("Full Error:", error);
-
-    showAlert("danger", getErrorMessage(error));
-  
-}  // <-- closes catch
-
-}   // <-- closes issueCredential()
-
-async function revokeCredential() {
-
     if (!contract) {
-
-      showAlert("warning", "Please connect MetaMask first.");
-
+      showAlert("warning", "Please log in as administrator first.");
       return;
+    }
 
+    // Check BEFORE uploading to IPFS or sending a transaction
+    if (!newStudentId || !studentName || !programme || !graduationDate) {
+      showAlert("warning", "Please fill in all fields.");
+      return;
     }
 
     try {
+      setBusy("Checking Student ID…");
 
-            if (!(await contract.credentialExists(revokeStudentId))) {
-        showAlert("warning", `No credential found for ${revokeStudentId}.`);
+      if (await contract.credentialExists(newStudentId)) {
+        showAlert("warning", `A credential for ${newStudentId} already exists.`);
         return;
       }
 
-      const existing = await contract.verifyCredential(revokeStudentId);
+      let uploadedHash = "";
+
+      if (selectedFile) {
+        setBusy("Uploading certificate to IPFS…");
+        uploadedHash = await uploadToIPFS(selectedFile);
+      }
+
+      setBusy("Please confirm in MetaMask…");
+      const tx = await contract.issueCredential(
+        newStudentId,
+        studentName,
+        programme,
+        graduationDate,
+        uploadedHash
+      );
+
+      setBusy("Recording on the blockchain…");
+      await tx.wait();
+
+      await loadDashboardStats(contract);
+      await loadCredentialList(contract);
+
+      showAlert("success", `Credential ${newStudentId} issued successfully!`);
+
+      setNewStudentId("");
+      setStudentName("");
+      setProgramme("");
+      setGraduationDate("");
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Issue error:", error);
+      showAlert("danger", getErrorMessage(error));
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function revokeCredential() {
+    if (!contract) {
+      showAlert("warning", "Please log in as administrator first.");
+      return;
+    }
+
+    const id = revokeStudentId.trim();
+
+    if (!id) {
+      showAlert("warning", "Please enter a Student ID.");
+      return;
+    }
+
+    try {
+      setBusy("Checking Student ID…");
+
+      if (!(await contract.credentialExists(id))) {
+        showAlert("warning", `No credential found for ${id}.`);
+        return;
+      }
+
+      const existing = await contract.verifyCredential(id);
       if (existing[6]) {
-        showAlert("warning", `${revokeStudentId} is already revoked.`);
+        showAlert("warning", `${id} is already revoked.`);
         return;
       }
 
-      const tx =
-        await contract.revokeCredential(revokeStudentId);
+      setBusy("Please confirm in MetaMask…");
+      const tx = await contract.revokeCredential(id);
 
-await tx.wait();
+      setBusy("Recording on the blockchain…");
+      await tx.wait();
 
-// Refresh dashboard
-await loadDashboardStats(contract);
-await loadCredentialList(contract);
+      await loadDashboardStats(contract);
+      await loadCredentialList(contract);
 
-showAlert(
-  "warning",
-  "Credential Revoked Successfully!"
-);
+      showAlert("success", `Credential ${id} has been revoked.`);
 
-      if (
-        result &&
-        result.studentId === revokeStudentId
-      ) {
-        setResult({
-          ...result,
-          revoked: true
-        });
+      if (result && result.studentId === id) {
+        setResult({ ...result, revoked: true });
       }
 
       setRevokeStudentId("");
-
     } catch (error) {
-
-      console.error(error);
-
-            showAlert("danger", getErrorMessage(error));
-
+      console.error("Revoke error:", error);
+      showAlert("danger", getErrorMessage(error));
+    } finally {
+      setBusy("");
     }
-
   }
 
   return (
@@ -391,6 +376,7 @@ showAlert(
                 studentId={studentId}
                 setStudentId={setStudentId}
                 verifyCredential={verifyCredential}
+                                busy={busy}
               />
               <CredentialDetails result={result} />
             </div>
@@ -412,6 +398,7 @@ showAlert(
                 selectedFile={selectedFile}
                 setSelectedFile={setSelectedFile}
                 issueCredential={issueCredential}
+                                busy={busy}
               />
             </div>
           </div>
@@ -424,6 +411,7 @@ showAlert(
                 revokeStudentId={revokeStudentId}
                 setRevokeStudentId={setRevokeStudentId}
                 revokeCredential={revokeCredential}
+                                busy={busy}
               />
             </div>
           </div>
