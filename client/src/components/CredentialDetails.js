@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { IPFS_GATEWAY } from "../services/ipfs";
   
 function CredentialDetails({ result }) {
 
@@ -81,7 +82,7 @@ function CredentialDetails({ result }) {
                 {result.ipfsHash ? (
 
                   <a
-                    href={`http://${window.location.hostname}:8080/ipfs/${result.ipfsHash}`}
+                                        href={`${IPFS_GATEWAY}${result.ipfsHash}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-outline-primary btn-sm"

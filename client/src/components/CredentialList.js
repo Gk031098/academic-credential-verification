@@ -1,4 +1,6 @@
+import { IPFS_GATEWAY } from "../services/ipfs";
 function CredentialList({ credentialList }) {
+
   return (
     <div className="card shadow-sm border-0 mt-4">
       <div className="card-header bg-dark text-white">
@@ -43,7 +45,7 @@ function CredentialList({ credentialList }) {
                     <td>
                       {credential.ipfsHash ? (
                         <a
-                          href={`http://${window.location.hostname}:8080/ipfs/${credential.ipfsHash}`}
+                                                    href={`${IPFS_GATEWAY}${credential.ipfsHash}`}
                           target="_blank"
                           rel="noreferrer"
                           className="btn btn-sm btn-primary"
